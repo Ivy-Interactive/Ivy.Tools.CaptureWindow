@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RuntimeIdentifiers>win-x64;win-x86;win-arm64</RuntimeIdentifiers>
+    <NoWarn>CA1416</NoWarn>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>capture-window</ToolCommandName>
+    <PackageId>Ivy.Tools.CaptureWindow</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>Ivy Interactive</Authors>
+    <Description>A Windows-only command-line tool for capturing application screenshots with interactive window selection.</Description>
+    <PackageTags>windows;screenshot;capture;tool;cli;windows-only</PackageTags>
+    <SupportedOSPlatformVersion>6.1</SupportedOSPlatformVersion>
+    <RepositoryUrl>https://github.com/ivy-interactive/Ivy.Tools.CaptureWindow</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" Version="0.49.1" />
+    <PackageReference Include="Spectre.Console.Cli" Version="0.49.1" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.WindowsDesktop.App" />
+  </ItemGroup>
+
+</Project>

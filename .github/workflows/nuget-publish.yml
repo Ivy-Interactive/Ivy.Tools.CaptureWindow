@@ -1,0 +1,65 @@
+name: Publish to NuGet
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.0.1)'
+        required: true
+        type: string
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build solution
+      run: dotnet build --configuration Release --no-restore
+      
+    - name: Test tool functionality
+      run: |
+        dotnet run -- --help
+        dotnet run -- list
+      
+    - name: Update version (manual trigger)
+      if: github.event_name == 'workflow_dispatch'
+      shell: pwsh
+      run: |
+        # Update version in project file
+        (Get-Content Ivy.Tools.CaptureWindow.csproj) -replace '<PackageVersion>.*</PackageVersion>', '<PackageVersion>${{ github.event.inputs.version }}</PackageVersion>' | Set-Content Ivy.Tools.CaptureWindow.csproj
+        
+    - name: Extract version from tag (release trigger)
+      if: github.event_name == 'release'
+      shell: pwsh
+      run: |
+        # Extract version from release tag (remove 'v' prefix if present)
+        $version = "${{ github.ref_name }}" -replace '^v', ''
+        echo "RELEASE_VERSION=$version" >> $env:GITHUB_ENV
+        # Update version in project file
+        (Get-Content Ivy.Tools.CaptureWindow.csproj) -replace '<PackageVersion>.*</PackageVersion>', "<PackageVersion>$version</PackageVersion>" | Set-Content Ivy.Tools.CaptureWindow.csproj
+        
+    - name: Pack NuGet package
+      run: dotnet pack Ivy.Tools.CaptureWindow.csproj --configuration Release --no-build --output ./artifacts
+      
+    - name: Publish to NuGet
+      run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages
+        path: ./artifacts/*.nupkg
+        retention-days: 30
