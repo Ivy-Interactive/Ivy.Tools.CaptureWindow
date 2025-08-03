@@ -50,8 +50,14 @@ jobs:
       if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
       run: dotnet build --configuration Release --no-restore
         
+    - name: Create artifacts directory
+      run: mkdir artifacts
+      
     - name: Pack NuGet package
       run: dotnet pack Ivy.Tools.CaptureWindow.csproj --configuration Release --no-build --output ./artifacts
+      
+    - name: List artifacts directory
+      run: dir ./artifacts
       
     - name: Publish to NuGet
       run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate
