@@ -51,7 +51,10 @@ jobs:
       run: dotnet build --configuration Release --no-restore
         
     - name: Create artifacts directory
-      run: New-Item -ItemType Directory -Path artifacts -Force
+      shell: pwsh
+      run: |
+        if (Test-Path artifacts) { Remove-Item artifacts -Recurse -Force }
+        New-Item -ItemType Directory -Path artifacts
       
     - name: Pack NuGet package
       run: dotnet pack Ivy.Tools.CaptureWindow.csproj --configuration Release --no-build --output ./artifacts
