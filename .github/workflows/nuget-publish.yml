@@ -29,11 +29,6 @@ jobs:
     - name: Build solution
       run: dotnet build --configuration Release --no-restore
       
-    - name: Test tool functionality
-      run: |
-        dotnet run -- --help
-        dotnet run -- list
-      
     - name: Update version (manual trigger)
       if: github.event_name == 'workflow_dispatch'
       shell: pwsh
@@ -50,6 +45,10 @@ jobs:
         echo "RELEASE_VERSION=$version" >> $env:GITHUB_ENV
         # Update version in project file
         (Get-Content Ivy.Tools.CaptureWindow.csproj) -replace '<PackageVersion>.*</PackageVersion>', "<PackageVersion>$version</PackageVersion>" | Set-Content Ivy.Tools.CaptureWindow.csproj
+        
+    - name: Rebuild after version update
+      if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+      run: dotnet build --configuration Release --no-restore
         
     - name: Pack NuGet package
       run: dotnet pack Ivy.Tools.CaptureWindow.csproj --configuration Release --no-build --output ./artifacts

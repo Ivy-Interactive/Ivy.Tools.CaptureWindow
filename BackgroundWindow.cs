@@ -26,11 +26,11 @@ public class BackgroundWindow : IDisposable
                 lpfnWndProc = _wndProc,
                 cbClsExtra = 0,
                 cbWndExtra = 0,
-                hInstance = Win32Api.GetModuleHandle(null),
+                hInstance = Win32Api.GetModuleHandle(null!),
                 hIcon = IntPtr.Zero,
                 hCursor = IntPtr.Zero,
                 hbrBackground = Win32Api.CreateSolidBrush(backgroundColor & 0x00FFFFFF), // Remove alpha channel for GDI
-                lpszMenuName = null,
+                lpszMenuName = null!,
                 lpszClassName = _className,
                 hIconSm = IntPtr.Zero
             };
@@ -55,7 +55,7 @@ public class BackgroundWindow : IDisposable
                 height,
                 IntPtr.Zero,
                 IntPtr.Zero,
-                Win32Api.GetModuleHandle(null),
+                Win32Api.GetModuleHandle(null!),
                 IntPtr.Zero
             );
 
@@ -86,7 +86,6 @@ public class BackgroundWindow : IDisposable
 
     private IntPtr WndProc(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam)
     {
-        const uint WM_PAINT = 0x000F;
         const uint WM_ERASEBKGND = 0x0014;
         
         if (msg == WM_ERASEBKGND)
